@@ -4,15 +4,15 @@ import { useTransactionContext } from '../../context/TransactionContext';
 import './styles.css';
 
 export const Wellcome = () => {
-  const { isStarted, balance, getInitialCoin } = useTransactionContext();
+  const { balance } = useTransactionContext();
+  const { hasMinded } = JSON.parse(localStorage.getItem('@lubyCoin'));
 
   return (
     <>
-      {!isStarted && balance === 0 ? (
+      {balance === 0 && !hasMinded ? (
         <div className='welcome'>
           <h2>Bem vindo</h2>
-          <p>Pegue 1 LBC para começar a jogar</p>
-          <button onClick={getInitialCoin}>Começar</button>
+          <p>Pegue grátis 1 LBC para começar a jogar</p>
         </div>
       ) : null}
     </>

@@ -24,7 +24,7 @@ export const TransactionProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState('');
   const [balance, setBalance] = useState('');
   const [isStarted, setIsStarted] = useState(false);
-  const [hasAlreadyMined, setHasAlreadyMined] = useState(false);
+  // const [hasAlreadyMined, setHasAlreadyMined] = useState(false);
 
   const checkWalletIsConected = useCallback(async () => {
     try {
@@ -34,10 +34,6 @@ export const TransactionProvider = ({ children }) => {
 
       if (accounts.length) {
         setCurrentAccount(accounts[0]);
-
-        if (balance >= 1) {
-          setHasAlreadyMined(true);
-        }
       } else {
         console.log('No Accounts found');
       }
@@ -50,7 +46,7 @@ export const TransactionProvider = ({ children }) => {
       setCurrentAccount(accounts[0]);
       console.log(`Selected account ${accounts[0]}`);
     });
-  }, [balance]);
+  }, []);
 
   const connectWallet = async () => {
     try {
@@ -93,13 +89,14 @@ export const TransactionProvider = ({ children }) => {
 
       if (result.transactionHash) {
         alert('Você minerou 10 LBC, agora pode iniciar o jogo');
-        setHasAlreadyMined(true);
+        // setHasAlreadyMined(true);
+        localStorage.setItem('@lubyCoin', JSON.stringify({ hasMinded: true }));
       }
       await getBalance();
       console.log('getInitialCoin', result);
     } catch (error) {
       console.log('Mint lbc', error);
-      setHasAlreadyMined(false);
+      // setHasAlreadyMined(false);
     }
   }, [currentAccount, getBalance]);
 
@@ -132,6 +129,7 @@ export const TransactionProvider = ({ children }) => {
       setIsStarted(false);
     } catch (error) {
       console.log('correcAnswer', error);
+      throw error;
     }
   }, [currentAccount, getBalance]);
 
@@ -147,6 +145,7 @@ export const TransactionProvider = ({ children }) => {
       setIsStarted(false);
     } catch (error) {
       console.log('incorrecAnswer', error);
+      throw error;
     }
   }, [currentAccount, getBalance]);
 
@@ -160,6 +159,7 @@ export const TransactionProvider = ({ children }) => {
 
       if (result.transactionHash) {
         alert(`Você acabou de sacar tudo. ${balance} LBC`);
+        localStorage.removeItem('@lubyCoin');
       }
       await getBalance();
       setIsStarted(false);
@@ -185,7 +185,6 @@ export const TransactionProvider = ({ children }) => {
         correcAnswer,
         incorrecAnswer,
         claimBalance,
-        hasAlreadyMined,
       }}
     >
       {children}

@@ -19,12 +19,18 @@ export const Questions = ({ questionNumber }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (answer === 'true') {
-      await correcAnswer();
-      return alert(`Você acertou e ganhou 0.5 LBC`);
-    } else if (answer === 'false') {
-      await incorrecAnswer();
-      return alert(`Você errou e perdeu 0.5 LBC`);
+    try {
+      if (answer === 'true') {
+        await correcAnswer();
+        return alert(`Você acertou e ganhou 0.5 LBC`);
+      }
+
+      if (answer === 'false') {
+        await incorrecAnswer();
+        return alert(`Você errou e perdeu 0.5 LBC`);
+      }
+    } catch (error) {
+      console.log('Submit Cancelado', error);
     }
   };
 

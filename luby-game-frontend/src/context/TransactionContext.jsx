@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import Web3 from 'web3';
 
-import { contractABI, contractAddress } from '../utils/constants';
+import { contractABI, contractAddress } from '../utils/contractAbi';
 
 export const TransactionContext = createContext();
 
@@ -20,40 +20,13 @@ const getEthereumContract = () => {
   return contract;
 };
 
-// const addTokenToWallet = async () => {
-//   try {
-//     // wasAdded is a boolean. Like any RPC method, an error may be thrown.
-//     const wasAdded = await ethereum.request({
-//       method: 'wallet_watchAsset',
-//       params: {
-//         type: 'ERC20', // Initially only supports ERC20, but eventually more!
-//         options: {
-//           address: contractAddress, // The address that the token is at.
-//           symbol: 'LBC', // A ticker symbol or shorthand, up to 5 chars.
-//           decimals: 18, // The number of decimals in the token
-//           image:
-//             'https://cdn2.vectorstock.com/i/thumb-large/25/66/one-token-coin-icon-vector-31612566.jpg', // A string url of the token logo
-//         },
-//       },
-//     });
-//     console.log('Thanks for your interest!');
-
-//     if (wasAdded) {
-//       console.log('Thanks for your interest!');
-//     } else {
-//       console.log('Your loss!');
-//     }
-//   } catch (error) {
-//     console.log('Token Wallet', error);
-//   }
-// };
-
 export const TransactionProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState('');
   const [balance, setBalance] = useState('');
-  const [isStarted, setIsStarted] = useState('');
+  const [isStarted, setIsStarted] = useState(false);
+  const [hasAlreadyMined, setHasAlreadyMined] = useState(false);
 
-  const checkWalletIsConected = async () => {
+  const checkWalletIsConected = useCallback(async () => {
     try {
       if (!ethereum) return alert('Please install metamask!');
 
@@ -61,6 +34,10 @@ export const TransactionProvider = ({ children }) => {
 
       if (accounts.length) {
         setCurrentAccount(accounts[0]);
+
+        if (balance >= 1) {
+          setHasAlreadyMined(true);
+        }
       } else {
         console.log('No Accounts found');
       }
@@ -73,7 +50,7 @@ export const TransactionProvider = ({ children }) => {
       setCurrentAccount(accounts[0]);
       console.log(`Selected account ${accounts[0]}`);
     });
-  };
+  }, [balance]);
 
   const connectWallet = async () => {
     try {
@@ -116,13 +93,15 @@ export const TransactionProvider = ({ children }) => {
 
       if (result.transactionHash) {
         alert('Você minerou 10 LBC, agora pode iniciar o jogo');
+        setHasAlreadyMined(true);
       }
-
+      await getBalance();
       console.log('getInitialCoin', result);
     } catch (error) {
       console.log('Mint lbc', error);
+      setHasAlreadyMined(false);
     }
-  }, [currentAccount]);
+  }, [currentAccount, getBalance]);
 
   const startGame = useCallback(async () => {
     try {
@@ -192,7 +171,7 @@ export const TransactionProvider = ({ children }) => {
   useEffect(() => {
     checkWalletIsConected();
     getBalance();
-  }, [getBalance]);
+  }, [getBalance, checkWalletIsConected]);
 
   return (
     <TransactionContext.Provider
@@ -206,6 +185,7 @@ export const TransactionProvider = ({ children }) => {
         correcAnswer,
         incorrecAnswer,
         claimBalance,
+        hasAlreadyMined,
       }}
     >
       {children}

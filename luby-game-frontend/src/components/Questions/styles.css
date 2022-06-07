@@ -1,0 +1,76 @@
+.questions {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+}
+
+.questions h2 {
+  font-size: 5rem;
+  text-transform: uppercase;
+  margin-bottom: 6rem;
+  text-align: center;
+}
+
+.questions p {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.questions form {
+  display: grid;
+}
+
+.form-control {
+  font-size: 2rem;
+  line-height: 1.1;
+  display: grid;
+  grid-template-columns: 1em auto;
+  gap: 0.5em;
+}
+
+.form-control + .form-control {
+  margin-top: 1em;
+}
+
+input[type='checkbox'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+
+  font: inherit;
+  color: currentColor;
+  width: 1.15em;
+  height: 1.15em;
+  border: 2px solid currentColor;
+  border-radius: 0.15em;
+  transform: translateY(-0.075em);
+
+  display: grid;
+  place-content: center;
+}
+
+input[type='checkbox']::before {
+  content: '';
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  transform-origin: bottom left;
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em #ab79d6;
+  /* background-color: CanvasText; */
+}
+
+input[type='checkbox']:checked::before {
+  transform: scale(1);
+}
+
+.questions form button {
+  background: #8844ee;
+  color: #fff;
+  margin-top: 3rem;
+}
+
+.questions form button:disabled {
+  cursor: not-allowed;
+  background: #ab79d6;
+}

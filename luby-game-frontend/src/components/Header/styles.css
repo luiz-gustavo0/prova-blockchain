@@ -1,0 +1,49 @@
+.header {
+  width: 100%;
+  height: 7rem;
+}
+
+.header-content {
+  width: 100%;
+  max-width: 130rem;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+}
+
+.logo {
+  font-size: 3rem;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.navigation {
+  height: 100%;
+}
+
+.navigation ul {
+  height: 100%;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.navigation ul p {
+  font-size: 2rem;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.navigation ul button {
+  border: 1px solid #8844ee;
+  color: #fff;
+  font-weight: bold;
+}
+
+.navigation .btn-conect {
+  background: #8844ee;
+}

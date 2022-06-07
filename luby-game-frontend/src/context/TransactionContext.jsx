@@ -22,9 +22,21 @@ const getEthereumContract = () => {
 
 export const TransactionProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState('');
-  const [balance, setBalance] = useState('');
+  const [balance, setBalance] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
-  // const [hasAlreadyMined, setHasAlreadyMined] = useState(false);
+  const [data, setData] = useState({
+    account: '',
+    balance: 0,
+  });
+
+  useEffect(() => {
+    const storageData = localStorage.getItem('@lubyCoin');
+
+    if (storageData) {
+      const dataParsed = JSON.parse(storageData);
+      setData(dataParsed);
+    }
+  }, []);
 
   const checkWalletIsConected = useCallback(async () => {
     try {
@@ -41,21 +53,29 @@ export const TransactionProvider = ({ children }) => {
       console.log('checkWalletIsConected', error);
       throw new Error('No ethereum object');
     }
-
-    ethereum.on('accountsChanged', function (accounts) {
-      setCurrentAccount(accounts[0]);
-      console.log(`Selected account ${accounts[0]}`);
-    });
   }, []);
 
   const connectWallet = async () => {
     try {
       if (!ethereum) return alert('Please install metamask!');
 
+      const contract = getEthereumContract();
       const accounts = await ethereum.request({
         method: 'eth_requestAccounts',
       });
       setCurrentAccount(accounts[0]);
+
+      const result = await contract.methods
+        .getBalanceIndividual()
+        .call({ from: currentAccount });
+
+      const balanceFormatd = result / 10 ** 18;
+      const dataObj = {
+        account: accounts[0],
+        balance: balanceFormatd,
+      };
+      setData(dataObj);
+      localStorage.setItem('@lubyCoin', JSON.stringify(dataObj));
     } catch (error) {
       console.log('connectWallet', error);
       throw new Error('No ethereum object');
@@ -63,15 +83,25 @@ export const TransactionProvider = ({ children }) => {
   };
 
   const getBalance = useCallback(async () => {
-    const contract = getEthereumContract();
+    try {
+      const contract = getEthereumContract();
 
-    const result = await contract.methods
-      .getBalanceIndividual()
-      .call({ from: currentAccount });
+      const result = await contract.methods
+        .getBalanceIndividual()
+        .call({ from: currentAccount });
 
-    const balanceFormatd = result / 10 ** 18;
+      const balanceFormatd = result / 10 ** 18;
 
-    setBalance(balanceFormatd);
+      setBalance(balanceFormatd);
+      setData((prevState) => ({ ...prevState, balance: balanceFormatd }));
+
+      localStorage.setItem(
+        '@lubyCoin',
+        JSON.stringify({ account: currentAccount, balance: balanceFormatd })
+      );
+    } catch (error) {
+      console.log('getBalance', error);
+    }
   }, [currentAccount]);
 
   const getInitialCoin = useCallback(async () => {
@@ -88,15 +118,12 @@ export const TransactionProvider = ({ children }) => {
         .send({ from: currentAccount });
 
       if (result.transactionHash) {
-        alert('Você minerou 10 LBC, agora pode iniciar o jogo');
-        // setHasAlreadyMined(true);
-        localStorage.setItem('@lubyCoin', JSON.stringify({ hasMinded: true }));
+        alert('Você ganhou 10 LBC, agora pode iniciar o jogo');
       }
       await getBalance();
       console.log('getInitialCoin', result);
     } catch (error) {
       console.log('Mint lbc', error);
-      // setHasAlreadyMined(false);
     }
   }, [currentAccount, getBalance]);
 
@@ -159,7 +186,6 @@ export const TransactionProvider = ({ children }) => {
 
       if (result.transactionHash) {
         alert(`Você acabou de sacar tudo. ${balance} LBC`);
-        localStorage.removeItem('@lubyCoin');
       }
       await getBalance();
       setIsStarted(false);
@@ -171,7 +197,17 @@ export const TransactionProvider = ({ children }) => {
   useEffect(() => {
     checkWalletIsConected();
     getBalance();
-  }, [getBalance, checkWalletIsConected]);
+
+    function handleAccountsChanged(accounts) {
+      setCurrentAccount(accounts[0]);
+    }
+
+    ethereum.on('accountsChanged', handleAccountsChanged);
+
+    return () => {
+      ethereum.removeListener('accountsChanged', handleAccountsChanged);
+    };
+  }, [balance, checkWalletIsConected, getBalance]);
 
   return (
     <TransactionContext.Provider
@@ -185,6 +221,7 @@ export const TransactionProvider = ({ children }) => {
         correcAnswer,
         incorrecAnswer,
         claimBalance,
+        data,
       }}
     >
       {children}

@@ -1,7 +1,7 @@
 .container {
   width: 100%;
   max-width: 130rem;
-  height: calc(100vh - 7rem);
+  height: calc(100vh - 8rem);
   margin: 0 auto;
   padding: 6rem 2rem;
 
@@ -17,6 +17,9 @@
   position: absolute;
   top: 6rem;
   right: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .balance span {

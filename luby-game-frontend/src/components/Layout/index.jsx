@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { FaCoins } from 'react-icons/fa';
+
 import { useTransactionContext } from '../../context/TransactionContext';
 import { Wellcome, StartGame, Questions } from '../index';
 
@@ -6,12 +8,12 @@ import './styles.css';
 
 export const Layout = () => {
   const [questionNumber, setQuestionNumber] = useState(0);
-  const { startGame, balance, currentAccount } = useTransactionContext();
+  const { startGame, data, currentAccount } = useTransactionContext();
 
   const handleStartGame = async () => {
     await startGame();
 
-    const number = Math.floor(Math.random() * 2);
+    const number = Math.floor(Math.random() * 3 + 1);
     setQuestionNumber(number);
   };
 
@@ -27,7 +29,8 @@ export const Layout = () => {
     <main>
       <div className='container'>
         <div className='balance'>
-          <span>Saldo {balance} LBC</span>
+          <FaCoins size={32} />
+          <span>{data.balance} LBC</span>
         </div>
         <Wellcome />
         <StartGame handleStartGame={handleStartGame} />

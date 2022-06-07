@@ -4,9 +4,10 @@ import { useTransactionContext } from '../../context/TransactionContext';
 import './styles.css';
 
 export const Header = () => {
-  const { currentAccount, connectWallet, claimBalance, getInitialCoin } =
+  const { currentAccount, connectWallet, claimBalance, getInitialCoin, data } =
     useTransactionContext();
-  const { hasMinded } = JSON.parse(localStorage.getItem('@lubyCoin'));
+
+  const { balance } = data;
 
   return (
     <header className='header'>
@@ -17,13 +18,13 @@ export const Header = () => {
 
         <nav className='navigation'>
           <ul>
-            {!hasMinded ? (
+            {balance === 0 ? (
               <li>
-                <button onClick={getInitialCoin}>Grátis 1LBC</button>
+                <button onClick={getInitialCoin}>Grátis 1 LBC</button>
               </li>
             ) : (
               <li>
-                <button onClick={claimBalance}>Claim Balance</button>
+                <button onClick={claimBalance}>Sacar tudo</button>
               </li>
             )}
             {!currentAccount && (

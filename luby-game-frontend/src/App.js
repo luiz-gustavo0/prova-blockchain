@@ -1,53 +1,60 @@
-import { useEffect, useState } from 'react';
 import './App.css';
-import { useContractFn } from './hooks/useContractFn';
-import { useWeb3 } from './hooks/useWeb3';
+import { useTransactionContext } from './context/TransactionContext';
 
 function App() {
-  const { selectedAccount, main } = useWeb3();
-  const { getBalance, mintLbc, startGame } = useContractFn();
+  const {
+    connectWallet,
+    currentAccount,
+    balance,
+    getInitialCoin,
+    startGame,
+    isStarted,
+    correcAnswer,
+    incorrecAnswer,
+    claimBalance,
+  } = useTransactionContext();
 
-  const [balance, setBalance] = useState(0);
-
-  useEffect(() => {
-    main();
-    getBalanceIndividual();
-  }, []);
-
-  console.log('selectedAccount', selectedAccount);
-
-  const init = () => {
-    startGame()
-      .then((res) => {
-        console.log(res);
-        getBalance();
-      })
-      .catch((err) => {
-        console.log('start', err);
-      });
-  };
-
-  const getBalanceIndividual = () => {
-    getBalance()
-      .then((response) => {
-        setBalance(response);
-      })
-      .catch((err) => {
-        console.log('balance individual', err);
-      });
-  };
+  console.log('Current Account', { currentAccount, balance });
 
   return (
-    <div className='App'>
-      <h1>Dapp: LubyGame</h1>
-      <h3>
-        Your Balance: <span>{balance}</span>
-      </h3>
-      <button onClick={mintLbc}>Minerar 10 LBC</button>
+    <div>
+      <h1>Luby Game</h1>
 
       <div>
-        <h2>Start Game</h2>
-        <button onClick={init}>Start</button>
+        {!currentAccount && (
+          <button onClick={connectWallet}>Connect Wallet</button>
+        )}
+
+        <div>
+          <p>Account: {currentAccount}</p>
+          <p>Balance: {balance}</p>
+          <button onClick={claimBalance}>Claim balance</button>
+        </div>
+
+        {!isStarted && balance === 0 && (
+          <div>
+            <p>Get 1 LBC to initialize game</p>
+            <button onClick={getInitialCoin}>Get 1 LBC</button>
+          </div>
+        )}
+
+        {!isStarted ? (
+          <div>
+            <p>Start Game</p>
+            <button onClick={startGame}>Start </button>
+          </div>
+        ) : (
+          <div>
+            <h2>Question</h2>
+
+            <>
+              <p>Quem é o CTO da Luby?</p>
+              <button onClick={incorrecAnswer}>Rodrigo Salatiel</button>
+              <button onClick={correcAnswer}>Rodrigo Gardin</button>
+              <button onClick={incorrecAnswer}>Rodrigo Júnior</button>
+            </>
+          </div>
+        )}
       </div>
     </div>
   );

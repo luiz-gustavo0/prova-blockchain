@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 
 import { useTransactionContext } from '../../context/TransactionContext';
 import { questions } from '../../utils/questions';
@@ -6,18 +6,25 @@ import { questions } from '../../utils/questions';
 import './styles.css';
 
 export const Questions = ({ questionNumber }) => {
-  const [answer, setAnswer] = useState([]);
+  const [answer, setAnswer] = useState('');
+  const id = useId();
 
-  const { isStarted } = useTransactionContext();
+  const { isStarted, correcAnswer, incorrecAnswer } = useTransactionContext();
 
   const handleChange = (event) => {
     const { target } = event;
-    if (target.checked) {
-      setAnswer([target.value]);
-    } else {
-      setAnswer((prevState) =>
-        prevState.filter((item) => item !== target.value)
-      );
+    setAnswer(target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (answer === 'true') {
+      await correcAnswer();
+      return alert(`Você acertou e ganhou 0.5 LBC`);
+    } else if (answer === 'false') {
+      await incorrecAnswer();
+      return alert(`Você errou e perdeu 0.5 LBC`);
     }
   };
 
@@ -28,11 +35,11 @@ export const Questions = ({ questionNumber }) => {
           <h2>Question</h2>
 
           <p>{questions[questionNumber].question}</p>
-          <form>
-            {questions[questionNumber].answers.map((answer) => (
-              <label className='form-control' key={answer.id}>
+          <form onSubmit={handleSubmit}>
+            {questions[questionNumber].answers.map((answer, index) => (
+              <label className='form-control' key={`${index}-${id}`}>
                 <input
-                  type='checkbox'
+                  type='radio'
                   name='answer'
                   value={answer.isCorrect}
                   onChange={handleChange}

@@ -146,7 +146,7 @@ export const TransactionProvider = ({ children }) => {
       await getBalance();
       setIsStarted(false);
     } catch (error) {
-      console.log('correcAnswer', error);
+      console.log('incorrecAnswer', error);
     }
   }, [currentAccount, getBalance]);
 

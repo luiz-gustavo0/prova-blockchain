@@ -5,14 +5,13 @@ import './styles.css';
 
 export const Wellcome = () => {
   const { data } = useTransactionContext();
-  const { balance } = data;
-
+  const { alreadyMintedLBC } = data;
   return (
     <>
-      {balance === 0 ? (
+      {!alreadyMintedLBC ? (
         <div className='welcome'>
           <h2>Bem vindo</h2>
-          <p>Pegue grátis 1 LBC para começar a jogar</p>
+          <p>Pegue grátis 10 LBC para começar a jogar</p>
         </div>
       ) : null}
     </>

@@ -1,5 +1,4 @@
 import React from 'react';
-import { FaCoins } from 'react-icons/fa';
 
 import { useTransactionContext } from '../../context/TransactionContext';
 
@@ -7,11 +6,11 @@ import './styles.css';
 
 export const StartGame = ({ handleStartGame }) => {
   const { isStarted, data } = useTransactionContext();
-  const { balance } = data;
+  const { alreadyMintedLBC } = data;
 
   return (
     <>
-      {!isStarted && balance > 0 ? (
+      {!isStarted && alreadyMintedLBC ? (
         <div className='start-game'>
           <h2>Iniciar Jogo</h2>
           <button onClick={handleStartGame}>Start</button>

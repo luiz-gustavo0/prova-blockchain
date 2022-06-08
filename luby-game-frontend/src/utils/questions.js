@@ -12,7 +12,11 @@ export const questions = [
         isCorrect: true,
       },
       {
-        alternative: '199 792 458 metros por segundo (m/s)',
+        alternative: '169 943 088 metros por segundo (m/s)',
+        isCorrect: false,
+      },
+      {
+        alternative: '499 192 338 metros por segundo (m/s)',
         isCorrect: false,
       },
     ],
@@ -33,6 +37,10 @@ export const questions = [
         alternative: '12 minutos',
         isCorrect: false,
       },
+      {
+        alternative: '1 hora',
+        isCorrect: false,
+      },
     ],
   },
   {
@@ -50,6 +58,54 @@ export const questions = [
       {
         alternative: 'Infinitas',
         isCorrect: true,
+      },
+      {
+        alternative: 'Milhares',
+        isCorrect: false,
+      },
+    ],
+  },
+  {
+    id: 4,
+    question: 'Qual a montanha mais alta do Brasil?',
+    answers: [
+      {
+        alternative: 'Pico da Neblina',
+        isCorrect: true,
+      },
+      {
+        alternative: 'Monte Roraima',
+        isCorrect: false,
+      },
+      {
+        alternative: ' Pico Maior de Friburgo',
+        isCorrect: false,
+      },
+      {
+        alternative: 'Pico da Bandeira',
+        isCorrect: false,
+      },
+    ],
+  },
+  {
+    id: 5,
+    question: 'Qual é a vida útil de uma libélula?',
+    answers: [
+      {
+        alternative: '3 dias',
+        isCorrect: false,
+      },
+      {
+        alternative: '12 horas',
+        isCorrect: false,
+      },
+      {
+        alternative: '24 horas',
+        isCorrect: true,
+      },
+      {
+        alternative: '2 dias',
+        isCorrect: false,
       },
     ],
   },

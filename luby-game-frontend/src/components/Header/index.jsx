@@ -7,7 +7,7 @@ export const Header = () => {
   const { currentAccount, connectWallet, claimBalance, getInitialCoin, data } =
     useTransactionContext();
 
-  const { balance } = data;
+  const { alreadyMintedLBC } = data;
 
   return (
     <header className='header'>
@@ -18,7 +18,7 @@ export const Header = () => {
 
         <nav className='navigation'>
           <ul>
-            {balance === 0 ? (
+            {!alreadyMintedLBC ? (
               <li>
                 <button onClick={getInitialCoin}>Grátis 1 LBC</button>
               </li>

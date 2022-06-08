@@ -27,16 +27,17 @@ export const TransactionProvider = ({ children }) => {
   const [data, setData] = useState({
     account: '',
     balance: 0,
+    alreadyMintedLBC: false,
   });
 
   useEffect(() => {
-    const storageData = localStorage.getItem('@lubyCoin');
+    const storageData = localStorage.getItem(`@lubyCoin${currentAccount}`);
 
     if (storageData) {
       const dataParsed = JSON.parse(storageData);
       setData(dataParsed);
     }
-  }, []);
+  }, [currentAccount]);
 
   const checkWalletIsConected = useCallback(async () => {
     try {
@@ -73,9 +74,12 @@ export const TransactionProvider = ({ children }) => {
       const dataObj = {
         account: accounts[0],
         balance: balanceFormatd,
+        alreadyMintedLBC: false,
       };
       setData(dataObj);
-      localStorage.setItem('@lubyCoin', JSON.stringify(dataObj));
+      localStorage.setItem(`@lubyCoin${accounts[0]}`, JSON.stringify(dataObj));
+
+      console.log('Conect Wallet', dataObj);
     } catch (error) {
       console.log('connectWallet', error);
       throw new Error('No ethereum object');
@@ -91,14 +95,26 @@ export const TransactionProvider = ({ children }) => {
         .call({ from: currentAccount });
 
       const balanceFormatd = result / 10 ** 18;
-
       setBalance(balanceFormatd);
-      setData((prevState) => ({ ...prevState, balance: balanceFormatd }));
 
-      localStorage.setItem(
-        '@lubyCoin',
-        JSON.stringify({ account: currentAccount, balance: balanceFormatd })
+      const storageDatadata = localStorage.getItem(
+        `@lubyCoin${currentAccount}`
       );
+
+      if (storageDatadata) {
+        const data = JSON.parse(storageDatadata);
+
+        localStorage.setItem(
+          `@lubyCoin${currentAccount}`,
+          JSON.stringify({ ...data, balance: balanceFormatd })
+        );
+
+        setData({
+          account: currentAccount,
+          balance: balanceFormatd,
+          alreadyMintedLBC: data.alreadyMintedLBC,
+        });
+      }
     } catch (error) {
       console.log('getBalance', error);
     }
@@ -121,7 +137,15 @@ export const TransactionProvider = ({ children }) => {
         alert('Você ganhou 10 LBC, agora pode iniciar o jogo');
       }
       await getBalance();
-      console.log('getInitialCoin', result);
+      localStorage.setItem(
+        `@lubyCoin${currentAccount}`,
+        JSON.stringify({
+          account: currentAccount,
+          balance: 0,
+          alreadyMintedLBC: true,
+        })
+      );
+      setData({ account: currentAccount, balance: 0, alreadyMintedLBC: true });
     } catch (error) {
       console.log('Mint lbc', error);
     }
@@ -200,6 +224,21 @@ export const TransactionProvider = ({ children }) => {
 
     function handleAccountsChanged(accounts) {
       setCurrentAccount(accounts[0]);
+      const storageDatadata = localStorage.getItem(`@lubyCoin${accounts[0]}`);
+
+      if (storageDatadata) {
+        const dataObj = JSON.parse(storageDatadata);
+        setData(dataObj);
+      } else {
+        localStorage.setItem(
+          `@lubyCoin${accounts[0]}`,
+          JSON.stringify({
+            account: accounts[0],
+            balance: 0,
+            alreadyMintedLBC: false,
+          })
+        );
+      }
     }
 
     ethereum.on('accountsChanged', handleAccountsChanged);

@@ -13,7 +13,7 @@ export const Layout = () => {
   const handleStartGame = async () => {
     await startGame();
 
-    const number = Math.floor(Math.random() * 3 + 1);
+    const number = Math.floor(Math.random() * 5 + 1);
     setQuestionNumber(number);
   };
 
